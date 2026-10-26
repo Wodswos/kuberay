@@ -19,6 +19,7 @@ import {
 import { useDeleteClusters } from "@/hooks/api/useDeleteClusters";
 import { ClusterRow } from "@/types/table";
 import { apiVersion } from "@/utils/constants";
+import { useNamespace } from "@/components/NamespaceProvider";
 
 const headCells: readonly HeadCell<ClusterRow>[] = [
   {
@@ -54,6 +55,7 @@ const headCells: readonly HeadCell<ClusterRow>[] = [
 ];
 
 export const ClustersTable = () => {
+  const namespace = useNamespace();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<ClusterStatus | null>(
     null,
@@ -172,6 +174,7 @@ export const ClustersTable = () => {
         types={["All", "Cluster", "Job"]}
       />
       <FrontendTable<ClusterRow>
+        key={namespace}
         data={filteredItems}
         isLoading={isLoading}
         error={error}

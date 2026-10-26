@@ -12,11 +12,22 @@ export const NamespaceSelector = () => {
   const namespace = useNamespace();
   const setNamespace = useSetNamespace();
   const { namespaces } = useListNamespaces();
+  const [visitedNamespaces, setVisitedNamespaces] = React.useState<string[]>(
+    [],
+  );
 
-  // Always offer "all" and keep the current namespace selectable even when the
-  // namespace list fails to load (e.g. missing RBAC or a v1 apiserver).
+  // Remember specific namespaces so switching to "all" still offers a way
+  // back when namespace listing is unavailable (e.g. missing RBAC).
+  React.useEffect(() => {
+    if (namespace && namespace !== ALL_NAMESPACES) {
+      setVisitedNamespaces((prev) =>
+        prev.includes(namespace) ? prev : [...prev, namespace],
+      );
+    }
+  }, [namespace]);
+
   const options = Array.from(
-    new Set([ALL_NAMESPACES, namespace, ...namespaces]),
+    new Set([ALL_NAMESPACES, ...visitedNamespaces, namespace, ...namespaces]),
   );
 
   return (

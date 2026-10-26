@@ -110,9 +110,9 @@ export const FrontendTable = <T extends { name: string }>(
     [props.getRowKey],
   );
 
-  // Drop selections whose rows are no longer in the data (e.g. deleted, or no
-  // longer visible because the namespace changed) so the delete button count
-  // stays accurate.
+  // Drop selections removed by filtering or polling. Namespace-scoped callers
+  // also key the table by namespace to reset selection and pagination when
+  // switching views, even if the new data contains the same rows.
   React.useEffect(() => {
     setSelected((prev) => {
       const currentKeys = new Set(data.map(getRowKey));

@@ -6,11 +6,9 @@ import {
   V1ResourceRequirements,
 } from "@kubernetes/client-node";
 import { useSnackBar } from "@/components/SnackBarProvider";
-import { useNamespace } from "@/components/NamespaceProvider";
 import { config } from "@/utils/constants";
 import { CreateRayJobConfig } from "@/types/v2/api/rayjob";
 import { ResourceKey } from "@/types/common";
-import { ALL_NAMESPACES } from "@/utils/config-defaults";
 
 // Constants
 const WORKER_GROUP_NAME = "small-wg";
@@ -164,7 +162,6 @@ async function createRayJobRequest(jobConfig: CreateRayJobConfig) {
 export const useCreateJob = () => {
   const [creating, setCreating] = React.useState(false);
   const snackBar = useSnackBar();
-  const namespace = useNamespace();
 
   const createJob = React.useCallback(
     async (jobConfig: CreateRayJobConfig) => {
@@ -174,10 +171,11 @@ export const useCreateJob = () => {
         // We don't want to use the result of creation to populate cache.
         // Just fetch from remote.
         await mutate(
-          `${namespace == ALL_NAMESPACES ? `` : `/namespaces/${namespace}`}/rayjobs`,
+          `/namespaces/${jobConfig.namespace}/rayjobs`,
           createRayJobRequest(jobConfig),
           { populateCache: false },
         );
+        await mutate("/rayjobs");
 
         snackBar.showSnackBar(
           "Success",
@@ -198,7 +196,7 @@ export const useCreateJob = () => {
         setCreating(false);
       }
     },
-    [namespace, snackBar],
+    [snackBar],
   );
 
   return {

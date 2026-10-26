@@ -27,13 +27,14 @@ import {
 import { InfoOutlined } from "@mui/icons-material";
 import { useCreateJob } from "@/hooks/api/useCreateJob";
 import { CreateRayJobConfig } from "@/types/v2/api/rayjob";
-import { useNamespace } from "@/components/NamespaceProvider";
+import { useNamespace, useSetNamespace } from "@/components/NamespaceProvider";
 import { useListNamespaces } from "@/hooks/api/useListNamespaces";
 import { ALL_NAMESPACES } from "@/utils/config-defaults";
 
 export const CreateJobForm = () => {
   const router = useRouter();
   const globalNamespace = useNamespace();
+  const setNamespace = useSetNamespace();
   const { namespaces } = useListNamespaces();
   // Defaults to the globally selected namespace, falling back to "default"
   // when the dashboard is listing all namespaces.
@@ -121,6 +122,9 @@ export const CreateJobForm = () => {
 
     const success = await createJob(jobConfig);
     if (success) {
+      if (globalNamespace !== ALL_NAMESPACES) {
+        setNamespace(jobConfig.namespace);
+      }
       navigateToJobsPage();
     }
   };

@@ -21,6 +21,7 @@ import {
 } from "./JobStatusParser";
 import { JobRow } from "@/types/table";
 import { apiVersion } from "@/utils/constants";
+import { useNamespace } from "@/components/NamespaceProvider";
 
 const headCells: readonly HeadCell<JobRow>[] = [
   {
@@ -62,6 +63,7 @@ const headCells: readonly HeadCell<JobRow>[] = [
 ];
 
 export const JobsTable = () => {
+  const namespace = useNamespace();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<JobStatus | null>(
     null,
@@ -201,6 +203,7 @@ export const JobsTable = () => {
         types={["All", "Batch API"]}
       />
       <FrontendTable<JobRow>
+        key={namespace}
         data={filteredItems}
         isLoading={isLoading}
         error={error}
